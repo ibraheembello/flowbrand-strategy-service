@@ -26,7 +26,9 @@ Built as a standalone microservice so it does not touch the main FlowBrand backe
 
 ## Status
 
-> **🚧 In active development. Stage 5 submission for the HNG internship program (deadline: 2026-05-12, 8pm WAT).**
+> ✅ **Submitted for HNG Stage 5 review (2026-05-12).** Live deployment, RFC, and System Design Document are all linked below.
+>
+> 🌐 **Live URL:** http://44.203.100.208:3009/api/docs (Swagger UI)
 
 | Component | Status |
 |---|---|
@@ -40,8 +42,8 @@ Built as a standalone microservice so it does not touch the main FlowBrand backe
 | Per-user daily rate limit (5 successful generations / UTC day) | ✅ Done |
 | Swagger UI | ✅ Done (`/api/docs`) |
 | System design doc | ✅ [Read it](https://docs.google.com/document/d/1MtvkaVaLvZyPUVKu5uNLsmSMc7g9A5pvr8vnCU1IQOs/view) |
-| AWS deployment | ⏳ Next |
-| Curveball decision log | ⏳ Next |
+| AWS deployment | ✅ Live at http://44.203.100.208:3009 |
+| Curveball decision log | ✅ Appended to the RFC |
 
 This README updates as each piece lands.
 
@@ -145,12 +147,41 @@ npm run test:cov
 
 ## Deployment
 
-Currently deployed alongside the main FlowBrand backend on AWS EC2.
+Currently deployed alongside the main FlowBrand backend on AWS EC2, sharing the Postgres instance with a dedicated `flowbrand_strategy` database. Runs under PM2 as `flowbrand-strategy` on port 3009.
 
-> 🌐 **Live URL:** *will appear here once Phase 5 ships*
+> 🌐 **Live URLs**
 >
-> Swagger: `http://<live-host>:3009/api/docs`
-> Health: `http://<live-host>:3009/health`
+> Swagger UI: http://44.203.100.208:3009/api/docs
+> Health: http://44.203.100.208:3009/health
+> Probe: http://44.203.100.208:3009/probe
+
+Deployment is a direct `git clone` + `npm install` + `npm run build` + `pm2 start` on the EC2 (no tarball pipeline since this is a one-off service). Migrations run via `npx typeorm migration:run` against the compiled `dist/`.
+
+## Live demo
+
+### Swagger UI
+
+All six endpoints documented and reachable on the public URL.
+
+![Swagger UI on the live deployment](docs/screenshots/screenshot-swagger.png)
+
+### Strategy generation in action
+
+A successful `POST /strategies/generate` from Swagger UI. Response is HTTP 201 with the full strategy tree (one Strategy, four FunnelStages, three FunnelTasks per stage). The `generated_via` field marks the path taken (`claude` or `fallback`).
+
+![POST /strategies/generate returning 201 with the full funnel tree](docs/screenshots/screenshot-generate.png)
+
+### PM2 process state on the EC2
+
+The service runs alongside the main FlowBrand backend (`team-alpha-dev`) on the same instance. Migrations ran clean, probe returns 200, Swagger returns 200.
+
+![PM2 status showing both services online, plus migration output and local probe](docs/screenshots/screenshot-pm2.png)
+
+### Unit tests
+
+14 unit tests across `prompt-builder.spec.ts` and `response-parser.spec.ts`. All passing in under 7 seconds.
+
+![Jest output: 14 tests passing, 2 test suites](docs/screenshots/screenshot-tests.png)
 
 ## Why a separate repo
 
