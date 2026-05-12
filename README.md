@@ -4,7 +4,7 @@
 
 **AI-powered marketing strategy generation for the FlowBrand platform.**
 
-A focused microservice that takes a marketing brief and generates a complete strategy — funnel stages, tasks, the works — using Claude.
+A focused microservice that takes a marketing brief and generates a complete strategy (funnel stages, tasks, and all) using Claude.
 
 ![status](https://img.shields.io/badge/status-in%20development-yellow)
 ![node](https://img.shields.io/badge/node-20.x-339933?logo=node.js&logoColor=white)
@@ -18,27 +18,30 @@ A focused microservice that takes a marketing brief and generates a complete str
 
 ## What this service does
 
-The FlowBrand product promises AI-generated marketing strategies. The main FlowBrand backend has the data model for it (`Strategy`, `FunnelStage`, `FunnelTask` tables) — but no endpoint actually produces strategies. Users hit the brief form and there's nowhere to send the data.
+The FlowBrand product promises AI-generated marketing strategies. The main FlowBrand backend has the data model for it (`Strategy`, `FunnelStage`, `FunnelTask` tables), but no endpoint actually produces strategies. Users hit the brief form and there is nowhere to send the data.
 
-This service fills that gap. You POST a marketing brief, it calls Claude with a structured prompt, parses the response, persists the full strategy tree (one strategy → multiple funnel stages → multiple tasks per stage) in a single database transaction, and returns the tree as JSON.
+This service fills that gap. You POST a marketing brief, it calls Claude with a structured prompt, parses the response, persists the full strategy tree (one strategy with multiple funnel stages, each with multiple tasks) in a single database transaction, and returns the tree as JSON.
 
-Built as a standalone microservice so it doesn't touch the main FlowBrand backend — drop-in addition rather than rewrite.
+Built as a standalone microservice so it does not touch the main FlowBrand backend. Drop-in addition rather than rewrite.
 
 ## Status
 
-> **🚧 In active development — Stage 5 submission for the HNG internship program (deadline: 2026-05-12, 8pm WAT).**
+> **🚧 In active development. Stage 5 submission for the HNG internship program (deadline: 2026-05-12, 8pm WAT).**
 
 | Component | Status |
 |---|---|
 | Project scaffold | ✅ Done |
-| RFC document | ⏳ In progress |
-| Core endpoints (`POST /strategies/generate`, `GET /strategies`, `GET /strategies/:id`) | ⏳ In progress |
-| LLM integration (Anthropic Claude) | ⏳ In progress |
-| Database migrations | ⏳ In progress |
-| Tests (unit + e2e) | ⏳ In progress |
-| System design doc | ⏳ In progress |
-| AWS deployment | ⏳ In progress |
-| Curveball decision log | ⏳ In progress |
+| RFC document | ✅ [Read it](https://docs.google.com/document/d/1r-pfXkgJSUw8WSe7rs-QcDf5bKXGsB4T0z8lXl7mynI/view) |
+| Core endpoints (`POST /generate`, `GET /strategies`, `GET /strategies/:id`, `GET /strategies/:id/funnel`) | ✅ Done |
+| LLM integration (Anthropic Claude + deterministic fallback) | ✅ Done |
+| Database migrations | ✅ Done (1 migration, 4 tables, FK + unique index) |
+| Unit tests (prompt builder + response parser) | ✅ 14 tests passing |
+| JWT auth guard | ✅ Done |
+| Per-user daily rate limit (5 successful generations / UTC day) | ✅ Done |
+| Swagger UI | ✅ Done (`/api/docs`) |
+| System design doc | ⏳ Next |
+| AWS deployment | ⏳ Next |
+| Curveball decision log | ⏳ Next |
 
 This README updates as each piece lands.
 
@@ -56,7 +59,7 @@ This README updates as each piece lands.
 | Validation | class-validator | DTO-level enforcement |
 | Tests | Jest | Unit + e2e |
 
-## API (preview — locks in during RFC)
+## API (preview, locks in during RFC)
 
 > 📖 **Live Swagger UI:** *deployment link will appear here once Phase 5 ships*
 
@@ -107,7 +110,7 @@ npm run start:dev
 ```
 src/
 ├── modules/
-│   ├── strategies/          # POST /generate, GET, etc. — orchestrates the flow
+│   ├── strategies/          # POST /generate, GET, etc. Orchestrates the flow.
 │   │   ├── dto/             # Request/response DTOs
 │   │   ├── entities/        # Strategy, FunnelStage, FunnelTask
 │   │   └── ...
@@ -156,11 +159,11 @@ The Stage 5 task explicitly requires leaving existing functionality untouched. B
 1. Adding migrations the rest of the team didn't agree to, or
 2. Branching off and risking merge conflicts with active feature PRs.
 
-A standalone microservice with a clean API contract sidesteps both. The main FlowBrand backend can call this service when it's ready — interface-only coupling.
+A standalone microservice with a clean API contract sidesteps both. The main FlowBrand backend can call this service when it is ready, with interface-only coupling.
 
 ## Author
 
-**Ibraheem Bello** — [github.com/ibraheembello](https://github.com/ibraheembello)
+**Ibraheem Bello**, [github.com/ibraheembello](https://github.com/ibraheembello)
 
 Built as a submission for the HNG internship Stage 5 backend task. Cooked under deadline pressure with a deliberate curveball (see RFC change log).
 
