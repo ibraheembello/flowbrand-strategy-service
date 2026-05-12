@@ -39,7 +39,7 @@ Built as a standalone microservice so it does not touch the main FlowBrand backe
 | JWT auth guard | ✅ Done |
 | Per-user daily rate limit (5 successful generations / UTC day) | ✅ Done |
 | Swagger UI | ✅ Done (`/api/docs`) |
-| System design doc | ⏳ Next |
+| System design doc | ✅ [Read it](https://docs.google.com/document/d/1MtvkaVaLvZyPUVKu5uNLsmSMc7g9A5pvr8vnCU1IQOs/view) |
 | AWS deployment | ⏳ Next |
 | Curveball decision log | ⏳ Next |
 
@@ -126,9 +126,9 @@ src/
 
 ## Documentation
 
-- **RFC:** *Google Doc link will appear here when Phase 1 is done*
-- **System Design Document:** *Google Doc link will appear here when Phase 3 is done*
-- **API Reference:** Swagger UI on the live deployment (see Quick start)
+- **RFC:** [docs.google.com (RFC)](https://docs.google.com/document/d/1r-pfXkgJSUw8WSe7rs-QcDf5bKXGsB4T0z8lXl7mynI/view), the design proposal written before any feature code, including the Stage 5b change log.
+- **System Design Document:** [docs.google.com (SDD)](https://docs.google.com/document/d/1MtvkaVaLvZyPUVKu5uNLsmSMc7g9A5pvr8vnCU1IQOs/view), architecture diagram, data model, request lifecycle, failure modes, scalability notes.
+- **API Reference:** Swagger UI on the live deployment, see Deployment section below.
 
 ## Running tests
 
